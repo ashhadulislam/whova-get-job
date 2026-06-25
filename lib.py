@@ -282,26 +282,7 @@ def pagination_ui(total_rows, page_key, location="top"):
     return start, end
 
 
-def render_table(df):
-    show_cols = [
-        "interest_score",
-        "score",
-        "date",
-        "designation",
-        "country",
-        "city",
-        "jobPostNumber",
-        "link",
-        "notes",
-        "jobPostText",
-    ]
 
-    existing_cols = [c for c in show_cols if c in df.columns]
-
-    st.dataframe(
-        df[existing_cols],
-        width='content'
-    )
 
 
 def interest_display(value):
@@ -421,11 +402,6 @@ def page_layout(title, df, full_df, page_key):
 
     st.metric("Visible jobs", len(filtered))
 
-    view_mode = st.radio(
-        "View mode",
-        ["Cards", "Table"],
-        horizontal=True,
-    )
 
     if filtered.empty:
         st.info("No jobs match the current filters.")
@@ -433,9 +409,7 @@ def page_layout(title, df, full_df, page_key):
 
     st.divider()
 
-    if view_mode == "Table":
-        render_table(filtered)
-        return
+ 
 
     start, end = pagination_ui(len(filtered), page_key,location="top",)
     page_df = filtered.iloc[start:end]
@@ -448,4 +422,3 @@ def page_layout(title, df, full_df, page_key):
     pagination_ui(len(filtered), page_key,location="bottom",)
 
 
-    
