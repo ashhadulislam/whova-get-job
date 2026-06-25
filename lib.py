@@ -300,7 +300,7 @@ def render_table(df):
 
     st.dataframe(
         df[existing_cols],
-        use_container_width=True,
+        width='content'
     )
 
 
