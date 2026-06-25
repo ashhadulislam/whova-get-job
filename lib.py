@@ -446,3 +446,6 @@ def page_layout(title, df, full_df, page_key):
 
     st.divider()
     pagination_ui(len(filtered), page_key,location="bottom",)
+
+
+    

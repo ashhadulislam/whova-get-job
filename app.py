@@ -1,6 +1,5 @@
 import streamlit as st
-
-from lib import backup_restore_ui, load_data
+from lib import load_data, backup_restore_ui
 
 st.set_page_config(
     page_title="Whova Job Explorer",
@@ -26,28 +25,29 @@ c4.metric("Interest < 5", low)
 
 st.info(
     """
-    Use the sidebar pages:
+    Use the pages in the sidebar:
 
     - **Unrated Jobs**: jobs waiting for your interest score
     - **High Interest**: jobs with interest score 5 or above
     - **Low Interest**: jobs with interest score below 5
 
-    Download your CSV backup regularly on Streamlit Community Cloud.
+    On Streamlit Community Cloud, local changes may disappear after restart.
+    Download your CSV backup regularly.
     """
 )
 
-preview_cols = [
-    "interest_score",
-    "score",
-    "date",
-    "designation",
-    "country",
-    "city",
-    "jobPostNumber",
-    "link",
-]
-
 st.dataframe(
-    df[preview_cols],
+    df[
+        [
+            "interest_score",
+            "score",
+            "date",
+            "designation",
+            "country",
+            "city",
+            "jobPostNumber",
+            "link",
+        ]
+    ],
     use_container_width=True,
 )
