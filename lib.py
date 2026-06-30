@@ -75,12 +75,33 @@ def normalize_df(df):
 
 
 def load_data():
-    if os.path.exists(SAVE_FILE):
-        df = read_csv_cached(SAVE_FILE)
-    else:
-        df = read_csv_cached(DATA_FILE)
+    base_df = read_csv_cached(DATA_FILE)
+    base_df = normalize_df(base_df)
 
-    return normalize_df(df)
+    if not os.path.exists(SAVE_FILE):
+        return base_df
+
+    saved_df = read_csv_cached(SAVE_FILE)
+    saved_df = normalize_df(saved_df)
+
+    key_cols = ["link", "jobPostNumber"]
+    keep_cols = key_cols + ["interest_score", "notes"]
+
+    saved_small = saved_df[keep_cols].drop_duplicates(
+        subset=key_cols,
+        keep="last",
+    )
+
+    merged = base_df.drop(
+        columns=["interest_score", "notes"],
+        errors="ignore",
+    ).merge(
+        saved_small,
+        on=key_cols,
+        how="left",
+    )
+
+    return normalize_df(merged)
 
 
 def save_data(df):
@@ -90,9 +111,30 @@ def save_data(df):
 
 
 def restore_uploaded_csv(uploaded_file):
-    restored_df = pd.read_csv(uploaded_file)
-    save_data(restored_df)
+    uploaded_df = pd.read_csv(uploaded_file)
+    uploaded_df = normalize_df(uploaded_df)
 
+    base_df = read_csv_cached(DATA_FILE)
+    base_df = normalize_df(base_df)
+
+    key_cols = ["link", "jobPostNumber"]
+    keep_cols = key_cols + ["interest_score", "notes"]
+
+    uploaded_small = uploaded_df[keep_cols].drop_duplicates(
+        subset=key_cols,
+        keep="last",
+    )
+
+    merged = base_df.drop(
+        columns=["interest_score", "notes"],
+        errors="ignore",
+    ).merge(
+        uploaded_small,
+        on=key_cols,
+        how="left",
+    )
+
+    save_data(merged)
 
 @st.cache_data(show_spinner=False)
 def filter_jobs_cached(
